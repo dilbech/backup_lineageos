@@ -39,6 +39,7 @@ jobs:
         #pwd
         sed -i "s/AAAAAAAAAA/$GITHUB_TOKEN/g" upload_release
         sed -i "s/BBBBBBBBBB/$GITHUB_REPOSITORY_OWNER/g" upload_release
+        sed -i "s/CCCCCCCCCC/$GITHUB_REPOSITORY_NAME/g" upload_release
         cat  upload_release
 
     - name: Build
