@@ -1,0 +1,48 @@
+name: Download and release
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.19
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.19
+      id: go
+
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Get go install github.com/github-release/github-release@latest
+      run: |
+        export GOPATH=$HOME/go
+        export GOBIN=$(go env GOPATH)/bin
+        export PATH=$PATH:$GOPATH
+        export PATH=$PATH:$GOBIN
+        mkdir -p $GOPATH/pkg
+        mkdir -p $GOBIN
+        go install github.com/github-release/github-release@latest
+
+    - name: Change CLIENT ID & SECRET
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_UPLOAD_FILES_TOKEN }}
+      run: |
+        #cd $HOME/go/src/github.com/gdrive-org/gdrive/
+        ls -al
+        pwd
+        sed -i "s/ABCDEFGHIJKLMN/$GITHUB_TOKEN/g" upload_release
+
+    - name: Build
+      run: |
+        #cp -r build/* $HOME/go/src/github.com/gdrive-org/gdrive/
+        #cd $HOME/go/src/github.com/gdrive-org/gdrive/
+        chmod +x upload_release
+        ./upload_release
+

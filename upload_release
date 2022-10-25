@@ -6,7 +6,7 @@ export GITHUB_TOKEN=ABCDEFGHIJKLMN
 
 #myArray=("taimen" "blueline" "sargo")
 #myArray=("sailfish" "walleye")
-#myArray=("walleye")
+myArray=("walleye")
 for str in ${myArray[@]}; do
   echo $str
   #github-release release --user alpenamilch --repo backup_microg_lineageos --tag $str
@@ -30,3 +30,4 @@ rm -fr ../../download.lineage.microg.org
 
 done
 
+exit 0
