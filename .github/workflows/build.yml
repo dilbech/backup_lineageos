@@ -46,5 +46,5 @@ jobs:
         #cp -r build/* $HOME/go/src/github.com/gdrive-org/gdrive/
         #cd $HOME/go/src/github.com/gdrive-org/gdrive/
         chmod +x upload_release
-        #./upload_release
+        ./upload_release
 
