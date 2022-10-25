@@ -30,16 +30,16 @@ jobs:
         mkdir -p $GOBIN
         go install github.com/github-release/github-release@latest
 
-    - name: Change CLIENT ID & SECRET
+    - name: Change GITHUB_R_O GITHUB_TOKEN
       env:
         GITHUB_TOKEN: ${{ secrets.GH_UPLOAD_FILES_TOKEN }}
         GITHUB_R_O: ${{ env.GITHUB_REPOSITORY_OWNER }}
       run: |
         #cd $HOME/go/src/github.com/gdrive-org/gdrive/
-        ls -al
-        pwd
-        sed -i "s/ABCDEFGHIJKLMN/$GITHUB_TOKEN/g" upload_release
-        sed -i "s/GITHUB_R_O/$GITHUB_R_O/g" upload_release
+        #ls -al
+        #pwd
+        sed -i "s/AAAAAAAAAA/$GITHUB_TOKEN/g" upload_release
+        sed -i "s/BBBBBBBBBB/$GITHUB_R_O/g" upload_release
         cat  upload_release
 
     - name: Build
