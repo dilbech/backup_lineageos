@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export GITHUB_TOKEN=ABCDEFGHIJKLMN
+export GITHUB_TOKEN=AAAAAAAAAA
 
 
 
@@ -17,7 +17,7 @@ wget --no-verbose https://mirrorbits.lineageos.org/full/walleye/20221025/lineage
 for i in `ls line*`
 do
 echo $i
-github-release upload --user GITHUB_R_O \
+github-release upload --user BBBBBBBBBB \
    --repo backup_lineageos \
    --tag $str  \
    --name  $i --file  $i
