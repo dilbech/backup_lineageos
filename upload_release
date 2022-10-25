@@ -9,7 +9,7 @@ export GITHUB_TOKEN=AAAAAAAAAA
 myArray=("walleye")
 for str in ${myArray[@]}; do
   echo $str
-github-release release --user BBBBBBBBBB --repo dilbech --tag walleye
+github-release release --user BBBBBBBBBB --repo backup_lineageos --tag walleye
 #rm -fr download.lineage.microg.org
 #wget --no-verbose -r -l1 --no-parent https://download.lineage.microg.org/$str
 #cd download.lineage.microg.org/$str
@@ -18,7 +18,7 @@ for i in `ls line*`
 do
 echo $i
 github-release upload --user BBBBBBBBBB \
-   --repo dilbech \
+   --repo backup_lineageos \
    --tag $str  \
    --name  $i --file  $i
 sleep 10
