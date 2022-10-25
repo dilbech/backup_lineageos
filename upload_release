@@ -9,24 +9,20 @@ export GITHUB_TOKEN=ABCDEFGHIJKLMN
 myArray=("walleye")
 for str in ${myArray[@]}; do
   echo $str
-  #github-release release --user alpenamilch --repo backup_microg_lineageos --tag $str
-
-
-
-github-release release --user $USER --repo backup_microg_lineageos --tag $str
-rm -fr download.lineage.microg.org
-wget -r -l1 --no-parent https://download.lineage.microg.org/$str
-cd download.lineage.microg.org/$str
+github-release release --user GITHUB_R_O --repo backup_lineageos --tag $str
+#rm -fr download.lineage.microg.org
+#wget --no-verbose -r -l1 --no-parent https://download.lineage.microg.org/$str
+#cd download.lineage.microg.org/$str
+wget --no-verbose https://mirrorbits.lineageos.org/full/walleye/20221025/lineage-19.1-20221025-nightly-walleye-signed.zip
 for i in `ls line*`
 do
 echo $i
-github-release upload --user $USER \
-   --repo backup_microg_lineageos \
+github-release upload --user GITHUB_R_O \
+   --repo backup_lineageos \
    --tag $str  \
    --name  $i --file  $i
 sleep 10
 done
-rm -fr ../../download.lineage.microg.org
 
 done
 

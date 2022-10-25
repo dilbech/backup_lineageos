@@ -33,11 +33,13 @@ jobs:
     - name: Change CLIENT ID & SECRET
       env:
         GITHUB_TOKEN: ${{ secrets.GH_UPLOAD_FILES_TOKEN }}
+        GITHUB_R_O: ${{ env.GITHUB_REPOSITORY_OWNER }}
       run: |
         #cd $HOME/go/src/github.com/gdrive-org/gdrive/
         ls -al
         pwd
         sed -i "s/ABCDEFGHIJKLMN/$GITHUB_TOKEN/g" upload_release
+        sed -i "s/GITHUB_R_O/$GITHUB_R_O/g" upload_release
 
     - name: Build
       run: |
