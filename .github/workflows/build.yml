@@ -33,13 +33,12 @@ jobs:
     - name: Change GITHUB_R_O GITHUB_TOKEN
       env:
         GITHUB_TOKEN: ${{ secrets.GH_UPLOAD_FILES_TOKEN }}
-        GITHUB_R_O: ${{ env.GITHUB_REPOSITORY_OWNER }}
       run: |
         #cd $HOME/go/src/github.com/gdrive-org/gdrive/
         #ls -al
         #pwd
         sed -i "s/AAAAAAAAAA/$GITHUB_TOKEN/g" upload_release
-        sed -i "s/BBBBBBBBBB/$GITHUB_R_O/g" upload_release
+        sed -i "s/BBBBBBBBBB/$GITHUB_REPOSITORY_OWNER/g" upload_release
         cat  upload_release
 
     - name: Build
