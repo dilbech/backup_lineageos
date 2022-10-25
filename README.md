@@ -34,11 +34,316 @@ done
 
 ```
 
+## Rename
+
+- To rename all files so that they are compatible with FAT32
+
+```
+find ./DIRECTORY -maxdepth 1  -exec rename -n 's/[^[:ascii:]]/_/g' {} \;
+```
+
+
+## ChromeOS
+
+### subtitles player
+
+- https://github.com/guancio/ChromeOsSubtitle
+
+### Enable developer mode
+
+Mount the flex SSD in a linux device (or USB boot). 
+
+sudo ```fdisk -l``` to identify the EFI System partition for example ```/dev/sdb12```. Then mount that partition.
+
+Edit file ```grub.cfg``` and add ```cros_debug``` to the various options
+
+Saved the ```grub.cfg``` file
+
+For meltdown/spectre add ```kvm-intel.vmentry_l1d_flush=always``` to the kernel command line the same way you added ```cros_debug``` to enable some software mitigations.
+
+
+### Chromebook writable root
+
+
+First make sure your machine is set to developer mode and then reboot to apply any pending updates.
+
+Execute the following to remove the root FS verification:
+
+```sudo /usr/share/vboot/bin/make_dev_ssd.sh --remove_rootfs_verification```
+
+The command will fail with a warning and tell you to run the same command with ```--partitions 4``` flag at the end where 4 can be any number. Run the command again with the new flag.
+
+Then set the following variable:
+
+```sudo crossystem dev_boot_signed_only=0```
+
+Then remount your root FS with:
+
+```sudo mount -o remount,rw /```
+
+
+
+
+References:
+
+https://www.reddit.com/r/ChromeOSFlex/comments/swxlz8/tutorial_enable_developer_mode_on_cros
+
+https://www.reddit.com/r/chromeos/comments/stl9fq/enabled_developer_mode_on_chromeos_flex_by/
+
+https://old.reddit.com/r/ChromeOSFlex/comments/w3ehw7/fixing_audio_on_bay_trail_chromebooks/
+
+https://xn--1ca.se/chromebook-writable-root/
+
+
+
+
+# systemd suspend modules
+
+```
+#!/bin/bash
+
+# Put into /lib/systemd/system-sleep/suspend-modules
+# chmod a+x /lib/systemd/system-sleep/suspend-modules
+
+# Unloads kernel modules defined in /etc/suspend-modules.d/*.conf
+# and /etc/suspend-modules
+# with one module per line
+
+# Too see credits, see git history
+# https://gist.github.com/sigboe/2602f9318b8f55ca92c7755a5b70644d/edit
+
+case $1 in
+    pre)
+        for mod in $(cat /etc/suspend-modules 2> /dev/null; awk 1 /etc/suspend-modules.d/*.conf 2> /dev/null); do
+            rmmod $mod
+        done
+    ;;
+    post)
+        for mod in $(cat /etc/suspend-modules 2> /dev/null; awk 1 /etc/suspend-modules.d/*.conf 2> /dev/null); do
+            modprobe $mod
+        done
+    ;;
+esac
+```
+
+
+# ddcutil
+
+- The following command changes the Brightness and Contrast inside the external monitor, respectively.
+```
+root@linux:~# ddcutil getvcp 10
+VCP code 0x10 (Brightness                    ): current value =    40, max value =   100
+root@linux:~# ddcutil capabilities | grep "Brightness\|Contrast"
+   Feature: 10 (Brightness)
+   Feature: 12 (Contrast)
+```
+- `ddcutil setvcp 10 40`
+- `ddcutil setvcp 12 40`
+
+# Chromium packages
+
+- Linux: https://launchpad.net/~savoury1/+archive/ubuntu/chromium
+- `chromium-browser --headless --disable-gpu "https://example.com" --dump-dom 2>&1 | pup`
+- `chromium-browser --headless --disable-gpu "https://example.com" --print-to-pdf 2>&1 `
+
+# Android
+
+- OTAs are downloaded is android.googleapis.com  ota.googlezip.net
+
+# Gphotos Sync
+
+- `pip3 install --force-reinstall  gphotos-sync`
+- Edit `.local/lib/python3.9/site-packages/gphotos/GooglePhotosIndex.py`
+
+```diff
+-       "Indexed %d %s", self.files_indexed, media_item.relative_path
++       "https://photos.google.com/lr/photo/%s %s", media_item.id, media_item.filename
+```
+
+
+# PDF
+
+- Split and rearrange: https://freesplit.app/
+
+# Annotations
+
+- Quick: https://szoter.com/launch/ 
+- Standalone: https://github.com/ksnip/ksnip
+
+
+# fstrim
+
+```
+cat /etc/crypttab 
+# <target name>	<source device>		<key file>	<options>
+home  UUID=783989fd-d44c-4e49-9287-a6ede15d7e13  none  luks,discard,no-read-workqueue,no-write-workqueue
+```
+
+- Enable
+
+```
+# cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent  refresh home
+```
+
+- Verify
+
+```
+# cryptsetup luksDump  /dev/nvme0n1p4 | grep Flags
+Flags:       	allow-discards no-read-workqueue no-write-workqueue
+```
+
+
+```
+# dmsetup table 
+home: 0 905183232 crypt aes-xts-plain64 :64:logon:cryptsetup:56a88c26-0843-4be9-b333-d79a1209c166 0 259:4 32768 3 allow_discards no_read_workqueue no_write_workqueue
+```
+
+
+# Xresources
+
+- lower numbers make fonts small (hard to read)
+- For a 14 inch screen 135 is good
+- Edit `.Xresources`
+
+```
+Xft.dpi: 135
+```
+
+| Size | dpi |
+|--|--|
+| 14 | 135 |
+| 17 | 128 |
+
+# List only security updates
+
+```
+apt-get --just-print upgrade | grep -i security   | awk '{print $2}'
+```
+
+
+# YouTube autoplay disable
+
+https://raw.githubusercontent.com/DandelionSprout/adfilt/master/StopAutoplayOnYouTube.txt
+
+
+# solokey
+
+```sudo apt install solo-python
+solo key version
+4.0.0 locked
+```
+
+- `solo key wink`
+- `solo key update`
+- `solo key update`
+```
+Wrote temporary copy of firmware-4.1.5.json to /tmp/tmp7tfs8v2f.json
+sha256sums coincide: f36bb365bfddf75004f28af392ae1439192ca0ed821ef496084a75a00d05087a
+using signature version >2.5.3
+erasing firmware...
+updated firmware 100%             
+time: 9.24 s
+bootloader is verifying signature...
+...pass!
+
+Congratulations, your key was updated to the latest firmware version: 4.1.5
+```
+
+
+# fsarchiver 
+
+`#fsarchiver savefs /home/user/FSARCHIVER/10.01.2022-nvme0n1p2-root.fsa /dev/nvme0n1p2 -s 900 --exclude=/snap --exclude="/home/*"  --exclude='/media' --exclude='/var/lib/lxd/*' --exclude='/tmp/*' --exclude='/var/lib/snapd/*' -A -v`
+
+
+# Email encoder
+
+- https://freetools.dev/email-encoder
+- https://hoax-info.tubit.tu-berlin.de/software/emailencoder.shtml
+
+
+# Google cloud
+
+- https://console.cloud.google.com/marketplace/product/google/drive.googleapis.com
+- https://groups.google.com/a/chromium.org/g/google-browser-signin-testaccounts
+- https://groups.google.com/a/chromium.org/g/chromium-dev
+- https://console.cloud.google.com/apis/api/chromesync.googleapis.com
+
+## optional
+
+- https://console.cloud.google.com/marketplace/product/google/cloudsearch.googleapis.com
+- https://console.cloud.google.com/marketplace/product/google/safebrowsing.googleapis.com
+- https://console.cloud.google.com/marketplace/product/google/timezone-backend.googleapis.com
+- https://console.cloud.google.com/marketplace/product/google/admin.googleapis.com
+- 💱 https://console.cloud.google.com/marketplace/product/google/translate.googleapis.com
+- https://console.cloud.google.com/marketplace/product/google/embeddedassistant.googleapis.com
+- https://console.cloud.google.com/marketplace/product/google/calendar-json.googleapis.com
+- https://console.cloud.google.com/marketplace/product/google/copresence.googleapis.com
+
+# Cloudready
+
+`sudo dd if=cloudready.bin of=/dev/sdX bs=4M `
+
+- If you add this to Ventoy rename the image to `.img`
+
+- Commandline installation
+
+`Ctrl+Alt+T` or `Ctrl+Alt+F2`
+
+- You'll need to log in - use the username: `chronos` and the password: `chrome`
+
+- `sudo fdisk -l | grep mmc\|sda`
+
+- Install
+
+```
+cd /usr/sbin
+sudo chromeos-install --dst /dev/sdX 
+or
+sudo chromeos-install --skip_src_removable --dst /dev/sdX
+```
+
+
+
+# Disable auto update of secureboot keys
+
+- check for secureboot
+
+`mokutil --sb-state`
+
+```
+systemctl stop secureboot-db.service
+systemctl disable secureboot-db.service
+journalctl -o short-precise -b -u secureboot-db.service
+```
+
+# test for hibernate
+`user@laptop: ~ $ busctl call org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager CanHibernate`
+
+the result
+
+`s yes `
+
+# yt-dlp
+`yt-dlp -f 'w[ext=mp4]'`
+
+`yt-dlp --min-sleep-interval 2 --max-sleep-interval 4  -f 'b' -S 'filesize~100M'`
+
+
+# subsync
+`/snap/bin/subsync -c sync -s old_subtitle.srt -r input.mp4 --ref-lang eng --sub-lang=eng --ref-stream-by-type=audio --out corrected_subtitle.srt`
+
+
+# Gcloud
+`curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -`
+
 # Fdroid repos
-![alt text](https://raw.githubusercontent.com/realdmitchell/es1/master/fdroid_repo.png "Fdroid repo")
+https://github.com/bmrz2019/foxy-droid/releases/download/v1.5/foxy-droid-debug.apk
 
 # Sony SRS XB20
-With the speaker turned on, press and hold the – (volume) button and the  Power button at the same time for more than 5 seconds until the speaker turns off.
+Reset: With the speaker turned on, press and hold the – (volume) button and the Power button at the same time for more than 5 seconds until the speaker turns off.
+
+# inxi
+`inxi -Fxxrzc0`
 
 # RSS podcasts
 
@@ -58,7 +363,26 @@ fusermount -u ~/visible
 
 ```
 
+# SBH24 Stereo Bluetooth
 
+| Multi function key | ⏯️ |
+|--|--|
+| Short press | Answer incoming/end calls |
+| Short press | Play or pause the current track |
+| Long press  | 7 seconds to: Enter pairing mode. |
+| Double tap  | Skip to the next music track |
+| Triple tap  | Return to the previous music track |
+
+| LED | Green | Orange | Red |
+|--   |--     |--      |  -- |
+| Battery  | 85% or more | 15% - 85% | 15% or less  |
+
+To perform a factory reset on your headset
+
+ 1. Connect your headset to a power source.  
+ 2. Turn your headset.  
+ 3. Long press for approximately 5 seconds.  
+ 4. The LED indicator will flash twice in orange
 
 
 # Samba
@@ -127,10 +451,6 @@ root     13393 13390  0 09:30 ?        00:00:00 /usr/sbin/smbd -D
 root     13395 13390  0 09:30 ?        00:00:00 /usr/sbin/smbd -D
 root     13435 11720  0 09:35 pts/3    00:00:00 grep --color=auto smbd
 ```
-
-
-# annotate images
-https://www.getcloudapp.com/apps
 
 # Firefox
  from https://news.ycombinator.com/item?id=16497642
@@ -467,9 +787,12 @@ function cgrep()
     find . -name .repo -prune -o -name .git -prune -o -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.h' \) -print0 | xargs -0 grep --color -n "$@"
 }
 
-function resgrep()
-{
-    for dir in `find . -name .repo -prune -o -name .git -prune -o -name res -type d`; do find $dir -type f -name '*\.xml' -print0 | xargs -0 grep --color -n "$@"; done;
+resgrep () 
+{ 
+    for dir in `find . -type d \( -not -name "values-*" -a -not -name "mipmap*" -a -not -name "drawable-*" -a -not -name "." \)`;
+    do
+        find $dir -type f -name '*\.xml' -exec grep --color -n "$@" {} +;
+    done
 }
 
 function mangrep()
