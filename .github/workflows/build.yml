@@ -40,11 +40,12 @@ jobs:
         pwd
         sed -i "s/ABCDEFGHIJKLMN/$GITHUB_TOKEN/g" upload_release
         sed -i "s/GITHUB_R_O/$GITHUB_R_O/g" upload_release
+        cat  upload_release
 
     - name: Build
       run: |
         #cp -r build/* $HOME/go/src/github.com/gdrive-org/gdrive/
         #cd $HOME/go/src/github.com/gdrive-org/gdrive/
         chmod +x upload_release
-        ./upload_release
+        #./upload_release
 
